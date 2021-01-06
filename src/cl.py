@@ -91,11 +91,10 @@ def get_posts(query, details):
             continue
         title = post.select_one(".result-title").text
         soup2 = BeautifulSoup(requests.get(link).text, features="html.parser")
-        description = (
-            soup2.select_one("section#postingbody")
-            .text.strip()
-            .lstrip("QR Code Link to This Post\n\n\n")
-        )
+        body = soup2.select_one("section#postingbody")
+        if not body:
+            continue
+        description = body.text.strip().lstrip("QR Code Link to This Post\n\n\n")
         if not any([not details, details.search(title), details.search(description)]):
             continue
         log(title)
