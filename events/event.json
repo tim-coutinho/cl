@@ -1,0 +1,10 @@
+{
+    "query": [
+        "keyboard",
+        "piano"
+    ],
+    "category": "music",
+    "max_price": "500",
+    "min_price": "100",
+    "details": ["88", "px-?130", "p-?45", "p-?71"]
+}

@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Craigslist scraper.
+
+Globals:
+  Function:
+    Timeout: 900
+
+Resources:
+  cl:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: cl
+      CodeUri: src/
+      Handler: app.handler
+      Runtime: python3.8
+      Policies:
+        - SESCrudPolicy:
+            IdentityName: tmcoutinho42@gmail.com
+        - DynamoDBCrudPolicy:
+            TableName: posts
+      Events:
+        Schedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 15 * * ? *)
+            Name: EmailSchedule
+            Input: '{"query": ["keyboard","piano"],"category": "music","max_price": "500","min_price": "100","details": ["88", "px-?130", "p-?45", "p-?71"]}'
+
+  posts:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: posts
+      AttributeDefinitions:
+        -
+          AttributeName: url
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: url
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
