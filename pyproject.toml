@@ -8,7 +8,7 @@ line-length = 100
 
 [tool.taskipy.tasks]
 deploy = "sam validate && poetry export -f requirements.txt --without-hashes > src/requirements.txt && sam build && sam deploy"
-format = "isort . && black ."
+format = "echo 'isort:' && isort . && echo 'black:' && black . && echo 'flake8:' && flake8"
 lint = "task format"
 release = "task lint && task test"
 test = "pytest"
@@ -31,6 +31,7 @@ requests = "^2.23"
 [tool.poetry.dev-dependencies]
 aws-sam-cli = "^1.15"
 black = "^20.8b1"
+flake8 = "^3.8.4"
 isort = "^5.7.0"
 pytest = "^6.2.1"
 taskipy = "^1.6.0"
