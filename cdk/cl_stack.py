@@ -1,5 +1,7 @@
+import json
+
 from aws_cdk.aws_dynamodb import Attribute, AttributeType, Table
-from aws_cdk.aws_events import Rule, Schedule
+from aws_cdk.aws_events import Rule, RuleTargetInput, Schedule
 from aws_cdk.aws_events_targets import LambdaFunction
 from aws_cdk.aws_iam import PolicyStatement
 from aws_cdk.aws_lambda import Code, Function, Runtime
@@ -39,9 +41,12 @@ class ClStack(Stack):
             ],
         )
 
+        with open("events/event.json") as f:
+            event = json.load(f)
+
         rule = Rule(
             self,
             "cl_schedule",
             schedule=Schedule.expression("cron(0 19 * * ? *)"),
-            targets=[LambdaFunction(function)],
+            targets=[LambdaFunction(function, event=RuleTargetInput.from_object(event))],
         )
