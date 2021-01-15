@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 
@@ -28,20 +29,27 @@ def main(argv):
     table_name = "posts"
 
     posts = cl.main(argv)
-    posts = [{"url": k, **v} for k, v in posts.items()]
+    posts = [
+        {
+            "url": k,
+            "ttl": int((datetime.datetime.now() + datetime.timedelta(days=30)).timestamp()),
+            **v,
+        }
+        for k, v in posts.items()
+    ]
 
     existing_posts = ddb.batch_get_item(
         RequestItems={table_name: {"Keys": [{"url": post["url"]} for post in posts]}}
     )["Responses"][table_name]
-    new_posts = {
+    new_posts = [
         post for post in posts if post["url"] not in [post["url"] for post in existing_posts]
-    }
+    ]
     num_new_posts = len(new_posts)
     if num_new_posts == 0:
         return
 
     ddb.batch_write_item(
-        RequestItems={table_name: [{"PutRequest": {"Item": post}} for post in posts]}
+        RequestItems={table_name: [{"PutRequest": {"Item": post}} for post in new_posts]}
     )
 
     ses.send_email(
