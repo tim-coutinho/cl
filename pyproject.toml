@@ -1,10 +1,17 @@
-[tool.black]
-line-length = 100
-
 [tool.isort]
 line_length = 100
 multi_line_output = 3
 profile = "black"
+
+[tool.black]
+line-length = 100
+
+[tool.taskipy.tasks]
+deploy = "sam validate && poetry export -f requirements.txt --without-hashes > src/requirements.txt && sam build && sam deploy"
+format = "isort . && black ."
+lint = "task format"
+release = "task lint && task test"
+test = "pytest"
 
 [tool.poetry]
 name = "cl"
@@ -16,16 +23,17 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-beautifulsoup4 = "^4.9"
-requests = "^2.23"
-boto3 = "^1.14"
 awscli = "^1.18"
+beautifulsoup4 = "^4.9"
+boto3 = "^1.14"
+requests = "^2.23"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
 aws-sam-cli = "^1.15"
-isort = "^5.6.4"
 black = "^20.8b1"
+isort = "^5.7.0"
+pytest = "^6.2.1"
+taskipy = "^1.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -33,7 +33,12 @@ def main(argv):
     existing_posts = ddb.batch_get_item(
         RequestItems={table_name: {"Keys": [{"url": post["url"]} for post in posts]}}
     )["Responses"][table_name]
-    new_posts = len(posts) - len(existing_posts)
+    new_posts = {
+        post for post in posts if post["url"] not in [post["url"] for post in existing_posts]
+    }
+    num_new_posts = len(new_posts)
+    if num_new_posts == 0:
+        return
 
     ddb.batch_write_item(
         RequestItems={table_name: [{"PutRequest": {"Item": post}} for post in posts]}
@@ -43,7 +48,7 @@ def main(argv):
         Source="tmcoutinho42@gmail.com",
         Destination={"ToAddresses": ["tmcoutinho42@gmail.com"]},
         Message={
-            "Subject": {"Data": f"{len(posts)} posts, {new_posts} new"},
-            "Body": {"Text": {"Data": json.dumps(posts, indent=2)}},
+            "Subject": {"Data": f"{len(new_posts)} new listings"},
+            "Body": {"Text": {"Data": json.dumps(new_posts, indent=2)}},
         },
     )
