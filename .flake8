@@ -3,7 +3,8 @@ exclude =
     .aws-sam
     .git,
     .pytest_cache,
-    __pycache__
+    __pycache__,
+    cdk.out
 ignore = D203, F841
 max-complexity = 10
 max-line-length = 100

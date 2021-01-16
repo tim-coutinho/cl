@@ -5,6 +5,6 @@ from aws_cdk.core import App
 from cdk.cl_stack import ClStack
 
 app = App()
-ClStack(app, "cl")
+ClStack(app, "cl2")
 
 app.synth()

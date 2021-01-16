@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import os
 
 import boto3
 
@@ -26,7 +27,8 @@ def handler(event, context):
 def main(argv):
     ses = boto3.client("ses")
     ddb = boto3.resource("dynamodb")
-    table_name = "posts"
+    table_name = os.environ["cl_table_name"]
+    email = os.environ["cl_email"]
 
     posts = cl.main(argv)
     posts = [
@@ -53,10 +55,10 @@ def main(argv):
     )
 
     ses.send_email(
-        Source="tmcoutinho42@gmail.com",
-        Destination={"ToAddresses": ["tmcoutinho42@gmail.com"]},
+        Source=email,
+        Destination={"ToAddresses": [email]},
         Message={
-            "Subject": {"Data": f"{len(new_posts)} new listings"},
+            "Subject": {"Data": f"{len(new_posts)} new listing{'s' if len(new_posts) > 1 else ''}"},
             "Body": {"Text": {"Data": json.dumps(new_posts, indent=2)}},
         },
     )
