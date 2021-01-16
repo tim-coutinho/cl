@@ -1,9 +1,9 @@
 __pycache__
 .pytest_cache
 .aws-sam
+src/requirements.txt
+.DS_Store
 
 # CDK asset staging directory
 .cdk.staging
 cdk.out
-
-.DS_Store
