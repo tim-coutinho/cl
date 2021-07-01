@@ -4,6 +4,7 @@ import logging
 import os
 
 import boto3
+from botocore.exceptions import ParamValidationError
 
 import cl
 
@@ -40,9 +41,12 @@ def main(argv):
         for k, v in posts.items()
     ]
 
-    existing_posts = ddb.batch_get_item(
-        RequestItems={table_name: {"Keys": [{"url": post["url"]} for post in posts]}}
-    )["Responses"][table_name]
+    try:
+        existing_posts = ddb.batch_get_item(
+            RequestItems={table_name: {"Keys": [{"url": post["url"]} for post in posts]}}
+        )["Responses"][table_name]
+    except ParamValidationError:
+        existing_posts = []
     new_posts = [
         post for post in posts if post["url"] not in [post["url"] for post in existing_posts]
     ]
